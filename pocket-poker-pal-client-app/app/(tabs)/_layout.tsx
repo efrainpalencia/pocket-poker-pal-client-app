@@ -11,7 +11,7 @@ export default function TabsLayout() {
   return (
     <Tabs
         screenOptions={{
-          tabBarActiveTintColor: '#760506',
+          tabBarActiveTintColor: '#FFDE59',
           headerStyle: {
             backgroundColor: '#1F1F1F',
           },
@@ -21,6 +21,7 @@ export default function TabsLayout() {
             backgroundColor: '#1F1F1F',
           },
           headerTitleAlign: 'center',
+          headerShown: false,
         }}
     >
 
@@ -31,6 +32,13 @@ export default function TabsLayout() {
             tabBarIcon: ({ focused, color }: TabBarIconProps ) => (<Ionicons name={focused ? "home-sharp" : "home-outline"} color={color} size={24} />),
           }}
       />
+        <Tabs.Screen
+            name="ai-chat"
+            options={{
+                headerTitle: "AI Poker Assistant",
+                tabBarIcon: ({ focused, color }: TabBarIconProps ) => (<Ionicons name={focused ? "chatbubble-ellipses-sharp" : "chatbubble-ellipses-outline"} color={color} size={24} />),
+            }}
+        />
       <Tabs.Screen
           name="about"
           options={{

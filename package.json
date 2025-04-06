@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "expo-av": "^15.0.2",
+    "react-native-uuid": "^2.0.3"
+  }
+}

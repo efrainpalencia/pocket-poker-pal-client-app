@@ -1,10 +1,11 @@
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {Container} from "../../components/Container";
 import ImageViewer from "../../components/ImageViewer";
+import {Image} from "expo-image";
 
-const HeroImage = require('../../assets/images/ai-poker-hero-img-v1.2.png')
-const HomeImage = require('../../assets/images/poker-bg-500.jpg')
-const BannerImage = require('../../assets/images/turn-on-2914934_640.jpg')
+const HeroImage = require("../../assets/images/ai-poker-hero-img-v1.2.png")
+const HomeImage = require("../../assets/images/poker-home.jpg")
+const BannerImage = require("../../assets/images/poker-bg.png")
 
 export default function HomeScreen() {
   return (
@@ -12,12 +13,9 @@ export default function HomeScreen() {
         <Container>
             <View style={styles.imageContainer}>
                 <ImageViewer imgSource={HeroImage} />
-            </View>
-            <View style={styles.bannerImageContainer}>
-                <ImageViewer imgSource={BannerImage} />
-            </View>
-            <View style={styles.imageContainer}>
                 <ImageViewer imgSource={HomeImage} />
+
+                {/*<Image source={BannerImage} />*/}
             </View>
         </Container>
     </>
@@ -42,8 +40,9 @@ const styles = StyleSheet.create({
     },
     bannerImageContainer: {
         flex: 1,
-        height: 100,
+        height: 700,
         width: '100%',
         alignItems: "center",
+        backgroundColor: "white",
     }
 });
