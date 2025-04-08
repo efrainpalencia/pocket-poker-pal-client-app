@@ -1,26 +1,29 @@
 import React, { useState, useRef } from 'react';
-import { View, Button, Text, StyleSheet } from 'react-native';
+import { View, Button, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Audio } from 'expo-av';
+import { sendAudioToBackend } from '../services/api';
 
 export default function VoiceRecorder() {
     const [isRecording, setIsRecording] = useState(false);
     const [recordingDuration, setRecordingDuration] = useState<number | null>(null);
     const [recordedUri, setRecordedUri] = useState<string | null>(null);
+    const [transcript, setTranscript] = useState<string | null>(null);
+    const [isTranscribing, setIsTranscribing] = useState(false);
 
     const recordingRef = useRef<Audio.Recording | null>(null);
 
     const recordingOptions: Audio.RecordingOptions = {
         android: {
             extension: '.m4a',
-            outputFormat: 2, // MPEG_4
-            audioEncoder: 3, // AAC
+            outputFormat: 2,
+            audioEncoder: 3,
             sampleRate: 44100,
             numberOfChannels: 2,
             bitRate: 128000,
         },
         ios: {
             extension: '.m4a',
-            audioQuality: 2, // High
+            audioQuality: 2,
             sampleRate: 44100,
             numberOfChannels: 2,
             bitRate: 128000,
@@ -56,6 +59,7 @@ export default function VoiceRecorder() {
             await recording.startAsync();
             recordingRef.current = recording;
             setIsRecording(true);
+            setTranscript(null);
         } catch (err) {
             console.error('Failed to start recording:', err);
         }
@@ -71,6 +75,18 @@ export default function VoiceRecorder() {
             setRecordedUri(uri || null);
             setIsRecording(false);
             console.log('Recording saved to:', uri);
+
+            if (uri) {
+                setIsTranscribing(true);
+                try {
+                    const result = await sendAudioToBackend(uri);
+                    setTranscript(result);
+                } catch (error) {
+                    setTranscript('❌ Failed to transcribe audio.');
+                } finally {
+                    setIsTranscribing(false);
+                }
+            }
         } catch (err) {
             console.error('Failed to stop recording:', err);
         }
@@ -80,7 +96,7 @@ export default function VoiceRecorder() {
         <View style={styles.container}>
             <Text style={styles.text}>
                 {isRecording
-                    ? `Recording... Duration: ${(recordingDuration ?? 0) / 1000}s`
+                    ? `🎙️ Recording... ${((recordingDuration ?? 0) / 1000).toFixed(1)}s`
                     : 'Press to start recording'}
             </Text>
 
@@ -90,10 +106,19 @@ export default function VoiceRecorder() {
                 color={isRecording ? '#EF4444' : '#10B981'}
             />
 
+            {isTranscribing && <ActivityIndicator style={{ marginTop: 12 }} color="#10B981" />}
+
             {recordedUri && (
                 <Text style={styles.text}>
                     ✅ Recorded File: {recordedUri}
                 </Text>
+            )}
+
+            {transcript && (
+                <View style={styles.transcriptBox}>
+                    <Text style={styles.transcriptLabel}>🧠 Transcription:</Text>
+                    <Text style={styles.transcriptText}>{transcript}</Text>
+                </View>
             )}
         </View>
     );
@@ -109,5 +134,21 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         fontSize: 16,
         color: '#fff',
+    },
+    transcriptBox: {
+        marginTop: 16,
+        padding: 12,
+        borderRadius: 8,
+        backgroundColor: '#1e1e1e',
+        width: '100%',
+    },
+    transcriptLabel: {
+        fontWeight: 'bold',
+        color: '#10B981',
+        marginBottom: 4,
+    },
+    transcriptText: {
+        color: '#fff',
+        fontSize: 16,
     },
 });

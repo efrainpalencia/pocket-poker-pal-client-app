@@ -8,16 +8,16 @@ const HomeImage = require("../../assets/images/poker-home.jpg")
 const BannerImage = require("../../assets/images/poker-bg.png")
 
 export default function HomeScreen() {
-  return (
-    <>
-        <Container>
-            <View style={styles.imageContainer}>
-                <ImageViewer imgSource={HeroImage} />
-                <ImageViewer imgSource={HomeImage} />
-            </View>
-        </Container>
-    </>
-  );
+    return (
+        <>
+            <Container>
+                <View style={styles.imageContainer}>
+                    <ImageViewer imgSource={HeroImage} />
+                    <ImageViewer imgSource={HomeImage} />
+                </View>
+            </Container>
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
