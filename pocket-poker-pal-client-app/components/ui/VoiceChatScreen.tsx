@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
+import axios from 'axios';
+import { BASE_API_URL } from '@env';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -80,6 +82,8 @@ export default function VoiceChatScreen() {
         }
     };
 
+
+
     const stopRecording = async () => {
         if (!recordingRef.current) return;
 
@@ -89,11 +93,47 @@ export default function VoiceChatScreen() {
             setRecordedUri(uri || null);
             setIsRecording(false);
             setIsListening(false);
-            console.log('Recording saved to:', uri);
-        } catch (err) {
-            console.error('Failed to stop recording:', err);
+
+            if (!uri) return;
+
+            const formData = new FormData();
+            formData.append('audio', {
+                uri,
+                name: 'question.m4a',
+                type: 'audio/m4a',
+            } as any);
+
+            setIsTyping(true);
+
+            const response = await axios.post(
+                'http://<your-server-ip>:8080/api/ask-audio',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
+            const {question, answer} = response.data;
+
+
+            setMessages((prev) => [
+                ...prev,
+                { role: 'user', text: question },
+                { role: 'assistant', text: answer },
+            ]);
+        } catch (err: any) {
+            console.error('❌ Audio upload failed:', err.message);
+            setMessages((prev) => [
+                ...prev,
+                { role: 'assistant', text: '❌ Error transcribing voice input.' },
+            ]);
+        } finally {
+            setIsTyping(false);
         }
     };
+
 
     const sendMessage = async () => {
         if (!input.trim()) return;
@@ -105,7 +145,7 @@ export default function VoiceChatScreen() {
         scrollToBottom();
 
         try {
-            const response = await fetch('http://localhost:8080/api/ask', {
+            const response = await fetch(`${BASE_API_URL}/ask-audio`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ input }),

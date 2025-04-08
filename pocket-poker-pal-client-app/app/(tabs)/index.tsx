@@ -1,7 +1,7 @@
 import {StyleSheet, View} from 'react-native';
 import {Container} from "../../components/Container";
 import ImageViewer from "../../components/ImageViewer";
-import {Image} from "expo-image";
+import "expo-router"
 
 const HeroImage = require("../../assets/images/ai-poker-hero-img-v1.2.png")
 const HomeImage = require("../../assets/images/poker-home.jpg")
@@ -14,8 +14,6 @@ export default function HomeScreen() {
             <View style={styles.imageContainer}>
                 <ImageViewer imgSource={HeroImage} />
                 <ImageViewer imgSource={HomeImage} />
-
-                {/*<Image source={BannerImage} />*/}
             </View>
         </Container>
     </>
