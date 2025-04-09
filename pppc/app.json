@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "pocket-poker-pal-client-app",
+    "slug": "pocket-poker-pal-client-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/poker-chip.png",
+    "scheme": "pocket-poker-pal-client-app",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "We use speech recognition to convert your voice into text.",
+        "NSMicrophoneUsageDescription": "We use the microphone to capture your voice."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/poker-chip.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/poker-chip.png"
+    },
+
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/poker-chip.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
