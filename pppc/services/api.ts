@@ -16,7 +16,7 @@ export const askQuestion = async (question: string): Promise<string> => {
         throw new Error('Invalid response format');
     } catch (error) {
         console.error('askQuestion error:', error);
-        console.error(API_BASE_URL);
+        // console.error("API_BASE_URL: " + API_BASE_URL); // debug url
         throw new Error('❌ Could not get answer from backend.');
     }
 };
