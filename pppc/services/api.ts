@@ -1,28 +1,22 @@
+// api.ts
 import axios from 'axios';
 import Constants from 'expo-constants';
 
 const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
 
-export const sendAudioToBackend = async (uri: string): Promise<string> => {
-    const formData = new FormData();
-
-    formData.append('audio', {
-        uri,
-        name: 'recording.m4a',
-        type: 'audio/m4a',
-    } as any); // required for React Native
-
+export const askQuestion = async (question: string): Promise<string> => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/api/ask`, formData, {
-            headers: {
-                Accept: 'application/json',
-                // Do NOT set Content-Type here; axios does it automatically with boundary
-            },
-        });
+        const response = await axios.post(`${API_BASE_URL}/ask`, { question });
 
-        return response.data.text ?? response.data.answer ?? "✅ Transcribed successfully";
-    } catch (error: any) {
-        console.error('❌ Audio upload failed:', error?.response?.data || error.message);
-        throw error;
+        // If backend returns { answer: "..." }
+        if (response.data && typeof response.data.answer === 'string') {
+            return response.data.answer;
+        }
+
+        throw new Error('Invalid response format');
+    } catch (error) {
+        console.error('askQuestion error:', error);
+        console.error(API_BASE_URL);
+        throw new Error('❌ Could not get answer from backend.');
     }
 };

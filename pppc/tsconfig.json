@@ -9,7 +9,7 @@
     }
   },
   "include": [
-    "app",
+    "app/**/*",
     "**/*.ts",
     "**/*.tsx",
     "index.tsx",

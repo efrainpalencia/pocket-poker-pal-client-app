@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -9,156 +9,67 @@ import {
     Platform,
     StyleSheet,
     Modal,
-    ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
-import axios from 'axios';
-import Constants from 'expo-constants';
+import { askQuestion } from '@/services/api';
+import { useSpeechToText } from '@/hooks/useSpeechToText';
 
-interface Message {
+type Message = {
     role: 'user' | 'assistant';
     text: string;
-}
+};
 
-export default function VoiceScreenChat() {
+export default function VoiceChatScreen() {
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [isTyping, setIsTyping] = useState(false);
-    const [isListening, setIsListening] = useState(false);
-    const [isRecording, setIsRecording] = useState(false);
-    const [recordedUri, setRecordedUri] = useState<string | null>(null);
-    const [recordingDuration, setRecordingDuration] = useState<number | null>(null);
     const [showResetModal, setShowResetModal] = useState(false);
 
-    const recordingRef = useRef<Audio.Recording | null>(null);
     const flatListRef = useRef<FlatList>(null);
 
-    const startRecording = async () => {
-        try {
-            await Audio.requestPermissionsAsync();
-            await Audio.setAudioModeAsync({
-                allowsRecordingIOS: true,
-                playsInSilentModeIOS: true,
-            });
+    const {
+        transcript,
+        isListening,
+        error,
+        startListening,
+        stopListening,
+        reset,
+    } = useSpeechToText();
 
-            const recording = new Audio.Recording();
-            await recording.prepareToRecordAsync({
-                android: {
-                    extension: '.aac',
-                    outputFormat: 2,
-                    audioEncoder: 3,
-                    sampleRate: 44100,
-                    numberOfChannels: 2,
-                    bitRate: 128000,
-                },
-                ios: {
-                    extension: '.aac',
-                    audioQuality: 2,
-                    sampleRate: 44100,
-                    numberOfChannels: 2,
-                    bitRate: 128000,
-                    linearPCMBitDepth: 16,
-                    linearPCMIsBigEndian: false,
-                    linearPCMIsFloat: false,
-                },
-                web: {
-                    mimeType: 'audio/webm',
-                    bitsPerSecond: 128000,
-                },
-            });
-
-            recording.setOnRecordingStatusUpdate((status) => {
-                if (status.isRecording) {
-                    setRecordingDuration(status.durationMillis ?? null);
-                }
-            });
-
-            await recording.startAsync();
-            recordingRef.current = recording;
-            setIsRecording(true);
-            setIsListening(true);
-        } catch (err) {
-            console.error('Failed to start recording:', err);
+    useEffect(() => {
+        if (transcript) {
+            setInput(transcript); // Allow editing before sending
         }
-    };
-
-    const stopRecording = async () => {
-        if (!recordingRef.current) return;
-
-        try {
-            await recordingRef.current.stopAndUnloadAsync();
-            const uri = recordingRef.current.getURI();
-            setRecordedUri(uri || null);
-            setIsRecording(false);
-            setIsListening(false);
-
-            if (!uri) return;
-
-            const formData = new FormData();
-            formData.append('audio', {
-                uri,
-                name: 'question.aac',
-                type: 'audio/aac',
-            } as any);
-
-            setIsTyping(true);
-            const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
-
-            const response = await axios.post(
-                `http://${API_BASE_URL}:8080/api/ask-audio`,
-                formData,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                }
-            );
-
-            const { question, answer } = response.data;
-
-            setMessages((prev) => [
-                ...prev,
-                { role: 'user', text: question },
-                { role: 'assistant', text: answer },
-            ]);
-        } catch (err: any) {
-            console.error('❌ Audio upload failed:', err.message);
-            setMessages((prev) => [
-                ...prev,
-                { role: 'assistant', text: '❌ Error transcribing voice input.' },
-            ]);
-        } finally {
-            setIsTyping(false);
-        }
-    };
+    }, [transcript]);
 
     const sendMessage = async () => {
         if (!input.trim()) return;
 
-        const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
-
-        const newMessages: Message[] = [...messages, { role: 'user', text: input }];
+        const userMessage: Message = { role: 'user', text: input };
+        const newMessages: Message[] = [...messages, userMessage];
         setMessages(newMessages);
         setInput('');
         setIsTyping(true);
         scrollToBottom();
 
         try {
-            const response = await fetch(`${API_BASE_URL}/ask-audio`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ input }),
-            });
-
-            const data = await response.json();
-            setMessages([...newMessages, { role: 'assistant', text: data.answer }]);
-        } catch (error) {
-            setMessages([...newMessages, { role: 'assistant', text: '❌ Error getting response' }]);
+            const answer = await askQuestion(userMessage.text);
+            const assistantMessage: Message = { role: 'assistant', text: answer };
+            const updatedMessages: Message[] = [...newMessages, assistantMessage];
+            setMessages(updatedMessages);
+            scrollToBottom(); // 👈 scroll after assistant reply
+        } catch (err) {
+            const errorMessage: Message = { role: 'assistant', text: '❌ Error getting response.' };
+            const errorMessages: Message[] = [...newMessages, errorMessage];
+            setMessages(errorMessages);
+            scrollToBottom(); // 👈 scroll after error message
         } finally {
             setIsTyping(false);
+            reset();
         }
     };
+
+
 
     const scrollToBottom = () => {
         setTimeout(() => {
@@ -169,10 +80,9 @@ export default function VoiceScreenChat() {
     const confirmReset = () => {
         setMessages([]);
         setInput('');
-        setRecordedUri(null);
         setIsTyping(false);
-        setIsListening(false);
         setShowResetModal(false);
+        reset();
     };
 
     const renderMessage = ({ item }: { item: Message }) => (
@@ -207,13 +117,14 @@ export default function VoiceScreenChat() {
 
             {isTyping && <Text style={styles.typingText}>🧠 PokerPal is typing...</Text>}
             {isListening && <Text style={styles.listeningText}>🎙️ Listening...</Text>}
+            {error && <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>}
 
             <View style={styles.inputBar}>
-                <TouchableOpacity onPress={isRecording ? stopRecording : startRecording}>
+                <TouchableOpacity onPress={isListening ? stopListening : startListening}>
                     <Ionicons
-                        name={isRecording ? 'stop-circle' : 'mic'}
+                        name={isListening ? 'stop-circle' : 'mic'}
                         size={28}
-                        color={isRecording ? '#EF4444' : '#10B981'}
+                        color={isListening ? '#EF4444' : '#10B981'}
                     />
                 </TouchableOpacity>
 
@@ -230,13 +141,10 @@ export default function VoiceScreenChat() {
                 </TouchableOpacity>
             </View>
 
-            {recordedUri && (
-                <Text style={{ color: '#fff', textAlign: 'center', marginBottom: 10 }}>
-                    ✅ Audio saved at: {recordedUri}
-                </Text>
-            )}
-
-            <TouchableOpacity style={styles.resetButton} onPress={() => setShowResetModal(true)}>
+            <TouchableOpacity
+                style={styles.resetButton}
+                onPress={() => setShowResetModal(true)}
+            >
                 <Text style={styles.resetButtonText}>🔄 Start Over</Text>
             </TouchableOpacity>
 
@@ -246,10 +154,16 @@ export default function VoiceScreenChat() {
                         <Text style={styles.modalTitle}>Reset Conversation?</Text>
                         <Text style={styles.modalText}>This will clear all messages.</Text>
                         <View style={styles.modalButtons}>
-                            <TouchableOpacity onPress={() => setShowResetModal(false)} style={styles.cancelButton}>
+                            <TouchableOpacity
+                                onPress={() => setShowResetModal(false)}
+                                style={styles.cancelButton}
+                            >
                                 <Text style={styles.cancelText}>Cancel</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={confirmReset} style={styles.confirmButton}>
+                            <TouchableOpacity
+                                onPress={confirmReset}
+                                style={styles.confirmButton}
+                            >
                                 <Text style={styles.confirmText}>Yes, Reset</Text>
                             </TouchableOpacity>
                         </View>
@@ -264,27 +178,11 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#121212' },
     chatContainer: { padding: 5 },
     message: { padding: 12, borderRadius: 12, marginVertical: 6 },
-    userMessage: {
-        backgroundColor: '#2a2a2a',
-        alignSelf: 'flex-end',
-    },
-    assistantMessage: {
-        backgroundColor: '#1f2937',
-        alignSelf: 'flex-start',
-    },
+    userMessage: { backgroundColor: '#2a2a2a', alignSelf: 'flex-end' },
+    assistantMessage: { backgroundColor: '#1f2937', alignSelf: 'flex-start' },
     messageText: { color: '#fff', fontSize: 16 },
-    typingText: {
-        textAlign: 'center',
-        color: '#aaa',
-        fontStyle: 'italic',
-        marginBottom: 4,
-    },
-    listeningText: {
-        textAlign: 'center',
-        color: '#10B981',
-        fontStyle: 'italic',
-        marginBottom: 4,
-    },
+    typingText: { textAlign: 'center', color: '#aaa', fontStyle: 'italic', marginBottom: 4 },
+    listeningText: { textAlign: 'center', color: '#10B981', fontStyle: 'italic', marginBottom: 4 },
     inputBar: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -337,21 +235,9 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 360,
     },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#fff',
-        marginBottom: 8,
-    },
-    modalText: {
-        color: '#aaa',
-        fontSize: 15,
-        marginBottom: 20,
-    },
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
+    modalTitle: { fontSize: 18, fontWeight: '600', color: '#fff', marginBottom: 8 },
+    modalText: { color: '#aaa', fontSize: 15, marginBottom: 20 },
+    modalButtons: { flexDirection: 'row', justifyContent: 'flex-end' },
     cancelButton: {
         marginRight: 12,
         paddingHorizontal: 12,
@@ -365,13 +251,6 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: '#EF4444',
     },
-    cancelText: {
-        color: '#ccc',
-        fontSize: 15,
-    },
-    confirmText: {
-        color: '#fff',
-        fontWeight: '600',
-        fontSize: 15,
-    },
+    cancelText: { color: '#ccc', fontSize: 15 },
+    confirmText: { color: '#fff', fontWeight: '600', fontSize: 15 },
 });

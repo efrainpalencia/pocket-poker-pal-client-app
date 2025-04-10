@@ -1,5 +1,5 @@
 import {StyleSheet, View} from 'react-native';
-import {Container} from "../../components/Container";
+import {Container} from "@/components/Container";
 import ImageViewer from "../../components/ImageViewer";
 import "expo-router"
 
