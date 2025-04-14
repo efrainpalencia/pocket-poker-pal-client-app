@@ -7,7 +7,7 @@ import {
     ScrollView
 } from "react-native";
 
-const backgroundImage = require('../../assets/images/poker-bg.png');
+const backgroundImage = require('../../assets/images/bg-black.jpg');
 
 export default function About() {
     return (
@@ -55,7 +55,6 @@ export default function About() {
                         <Text style={styles.paragraph}>
                             💬 Conversational Chat Interface{"\n"}
                             🤖 Accurate AI Answers Based on Real Rulebooks{"\n"}
-                            🔍 Searchable Memory of Past Questions{"\n"}
                             🎙 Voice Input for Fast, Hands-Free Use{"\n"}
                             📱 Clean, Minimal Design Built for Mobile
                         </Text>

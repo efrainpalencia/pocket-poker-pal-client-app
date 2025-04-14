@@ -3,7 +3,7 @@ import {Container} from "@/components/Container";
 import ImageViewer from "../../components/ImageViewer";
 import "expo-router"
 
-const HeroImage = require("../../assets/images/ai-poker-hero-img-v1.2.png")
+const HeroImage = require("../../assets/images/POCKET POKER PAL.png")
 const HomeImage = require("../../assets/images/poker-home.jpg")
 const BannerImage = require("../../assets/images/poker-bg.png")
 
@@ -13,7 +13,7 @@ export default function HomeScreen() {
             <Container>
                 <View style={styles.imageContainer}>
                     <ImageViewer imgSource={HeroImage} />
-                    <ImageViewer imgSource={HomeImage} />
+                    {/*<ImageViewer imgSource={HomeImage} />*/}
                 </View>
             </Container>
         </>
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         flex: 1,
-        height: 300,
+        height: 1200,
         width: '100%',
         alignItems: "center",
     },

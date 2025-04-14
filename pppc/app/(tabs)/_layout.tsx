@@ -29,6 +29,7 @@ export default function TabsLayout() {
           name="index"
           options={{
             headerTitle: "Pocket Poker Pal",
+              tabBarShowLabel: false,
             tabBarIcon: ({ focused, color }: TabBarIconProps ) => (<Ionicons name={focused ? "home-sharp" : "home-outline"} color={color} size={24} />),
           }}
       />
@@ -36,6 +37,7 @@ export default function TabsLayout() {
             name="ai-chat"
             options={{
                 headerTitle: "AI Poker Assistant",
+                tabBarShowLabel: false,
                 tabBarIcon: ({ focused, color }: TabBarIconProps ) => (<Ionicons name={focused ? "chatbubble-ellipses-sharp" : "chatbubble-ellipses-outline"} color={color} size={24} />),
             }}
         />
@@ -43,6 +45,7 @@ export default function TabsLayout() {
           name="about"
           options={{
             headerTitle: "About",
+              tabBarShowLabel: false,
             tabBarIcon: ({focused, color}: TabBarIconProps) => (<Ionicons name={focused ? "information-circle-sharp" : "information-circle-outline"} color={color} size={24} /> )
           }}
       />

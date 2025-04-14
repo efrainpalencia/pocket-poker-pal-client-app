@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 500,
         height: '100%',
-        maxHeight: 368,
+        maxHeight: 1200,
     },
 });
 
