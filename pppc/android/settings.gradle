@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'PocketPokerPalClientApp'
+rootProject.name = 'pocket-poker-pal-client-app'
 
 dependencyResolutionManagement {
   versionCatalogs {

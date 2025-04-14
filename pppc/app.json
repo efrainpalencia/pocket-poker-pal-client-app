@@ -20,14 +20,19 @@
         "foregroundImage": "./assets/images/poker-chip.png",
         "backgroundColor": "#ffffff"
       },
-      "permissions": ["RECORD_AUDIO"]
+      "permissions": [
+        "RECORD_AUDIO",
+        "RECORD_AUDIO",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.anonymous.pocketpokerpalclientapp"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/poker-chip.png"
     },
-
     "plugins": [
       "expo-router",
       [
@@ -48,6 +53,15 @@
     ],
     "experiments": {
       "typedRoutes": false
+    },
+    "extra": {
+      "API_BASE_URL": "https://pocket-poker-pal-backend-production.up.railway.app/api",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "b2cb439c-4c3a-4058-a1f5-969af90b87f8"
+      }
     }
   }
 }

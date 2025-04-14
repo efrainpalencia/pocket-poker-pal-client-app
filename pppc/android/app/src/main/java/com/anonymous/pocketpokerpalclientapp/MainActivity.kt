@@ -1,4 +1,4 @@
-package com.efrai.pocketpokerpal
+package com.anonymous.pocketpokerpalclientapp
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

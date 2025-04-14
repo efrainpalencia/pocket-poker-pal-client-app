@@ -1,4 +1,4 @@
-package com.efrai.pocketpokerpal
+package com.anonymous.pocketpokerpalclientapp
 
 import android.app.Application
 import android.content.res.Configuration

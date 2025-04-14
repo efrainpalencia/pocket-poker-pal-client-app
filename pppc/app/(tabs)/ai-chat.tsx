@@ -3,7 +3,7 @@ import {StyleSheet, Text, View, ImageBackground} from "react-native";
 import VoiceChatScreen from "../../components/ui/VoiceChatScreen";
 import React from "react";
 
-const backgroundImage = require("../../assets/images/poker-bg.png")
+const backgroundImage = require("../../assets/images/bg-black.jpg")
 
 export default function AiChat () {
 
