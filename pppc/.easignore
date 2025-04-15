@@ -1,0 +1,30 @@
+# node modules and caches
+node_modules
+npm-debug.log
+yarn-error.log
+.expo
+.expo-shared
+.tmp
+.idea
+.vscode
+
+# Android/iOS build output
+android/.gradle
+android/app/build
+android/build
+ios/build
+ios/Pods
+*.xcworkspace
+*.xcodeproj
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+eas.json
+
+# Duplicate ic_launcher images
+android/app/src/main/res/mipmap-*/ic_launcher*.webp

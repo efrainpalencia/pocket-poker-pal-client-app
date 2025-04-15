@@ -19,24 +19,18 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     assetBundlePatterns: ['**/*'],
     ios: {
         supportsTablet: true,
-        bundleIdentifier: 'com.efrai.pocketpokerpal',
-        buildNumber: '1.0.0',
     },
     android: {
         package: 'com.efrai.pocketpokerpal',
         versionCode: 1,
-        adaptiveIcon: {
-            foregroundImage: './assets/images/poker-chip.png',
-            backgroundColor: '#ffffff',
-        },
     },
     web: {
         favicon: './assets/favicon.png',
     },
-    runtimeVersion: {
-        policy: 'appVersion',
-    },
     extra: {
         API_BASE_URL: process.env.API_BASE_URL,
+        eas: {
+            projectId: 'b2cb439c-4c3a-4058-a1f5-969af90b87f8',
+        },
     },
 });
