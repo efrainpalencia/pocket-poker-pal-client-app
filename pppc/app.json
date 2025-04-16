@@ -58,9 +58,6 @@
       "API_BASE_URL": "https://pocket-poker-pal-backend-production.up.railway.app/api",
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "b2cb439c-4c3a-4058-a1f5-969af90b87f8"
       }
     }
   }

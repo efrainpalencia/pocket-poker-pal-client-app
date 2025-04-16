@@ -86,9 +86,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.pocketpokerpalclientapp'
+    namespace 'com.efrai.pocketpokerpal'
     defaultConfig {
-        applicationId 'com.anonymous.pocketpokerpalclientapp'
+        applicationId 'com.efrai.pocketpokerpal'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
