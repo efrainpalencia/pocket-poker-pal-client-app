@@ -4,7 +4,7 @@
     "slug": "pocket-poker-pal-client-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/poker-chip.png",
+    "icon": "./assets/images/ppp_splashscreen.png",
     "scheme": "pocket-poker-pal-client-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/poker-chip.png",
+        "foregroundImage": "./assets/images/ppp_splashscreen.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -38,7 +38,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/poker-chip.png",
+          "image": "./assets/images/ppp_splashscreen.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
