@@ -2,9 +2,9 @@
   "expo": {
     "name": "pocket-poker-pal-client-app",
     "slug": "pocket-poker-pal-client-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/images/ppp_splashscreen.png",
+    "icon": "./assets/images/icon_logo.png",
     "scheme": "pocket-poker-pal-client-app",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/ppp_splashscreen.png",
+        "foregroundImage": "./assets/images/icon_logo.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -31,14 +31,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/poker-chip.png"
+      "favicon": "./assets/images/icon_logo.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/ppp_splashscreen.png",
+          "image": "./assets/images/icon_logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

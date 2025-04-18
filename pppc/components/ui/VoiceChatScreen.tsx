@@ -9,6 +9,9 @@ import {
     Platform,
     StyleSheet,
     Modal,
+    ScrollView,
+    Keyboard,
+    TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { askQuestion } from '@/services/api';
@@ -57,19 +60,17 @@ export default function VoiceChatScreen() {
             const assistantMessage: Message = { role: 'assistant', text: answer };
             const updatedMessages: Message[] = [...newMessages, assistantMessage];
             setMessages(updatedMessages);
-            scrollToBottom(); // 👈 scroll after assistant reply
+            scrollToBottom();
         } catch (err) {
             const errorMessage: Message = { role: 'assistant', text: '❌ Error getting response.' };
             const errorMessages: Message[] = [...newMessages, errorMessage];
             setMessages(errorMessages);
-            scrollToBottom(); // 👈 scroll after error message
+            scrollToBottom();
         } finally {
             setIsTyping(false);
             reset();
         }
     };
-
-
 
     const scrollToBottom = () => {
         setTimeout(() => {
@@ -99,82 +100,83 @@ export default function VoiceChatScreen() {
     return (
         <KeyboardAvoidingView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
         >
-            {messages.length === 0 ? (
-                <View style={styles.placeholderContainer}>
-                    <Text style={styles.placeholderText}>🤖 Do you have a poker question?</Text>
-                </View>
-            ) : (
-                <FlatList
-                    ref={flatListRef}
-                    data={messages}
-                    renderItem={renderMessage}
-                    keyExtractor={(_, index) => index.toString()}
-                    contentContainerStyle={styles.chatContainer}
-                />
-            )}
-
-            {isTyping && <Text style={styles.typingText}>🧠 PokerPal is typing...</Text>}
-            {isListening && <Text style={styles.listeningText}>🎙️ Listening...</Text>}
-            {error && <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>}
-
-            <View style={styles.inputBar}>
-                <TouchableOpacity onPress={isListening ? stopListening : startListening}>
-                    <Ionicons
-                        name={isListening ? 'stop-circle' : 'mic'}
-                        size={28}
-                        color={isListening ? '#EF4444' : '#10B981'}
-                    />
-                </TouchableOpacity>
-
-                <TextInput
-                    style={styles.input}
-                    value={input}
-                    placeholder="Ask something..."
-                    placeholderTextColor="#aaa"
-                    onChangeText={setInput}
-                />
-
-                <TouchableOpacity onPress={sendMessage} style={styles.iconButton}>
-                    <Ionicons name="send" size={24} color="#fff" />
-                </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-                style={styles.resetButton}
-                onPress={() => setShowResetModal(true)}
-            >
-                <Text style={styles.resetButtonText}>🔄 Start Over</Text>
-            </TouchableOpacity>
-
-            <Modal transparent={true} visible={showResetModal} animationType="fade">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContainer}>
-                        <Text style={styles.modalTitle}>Reset Conversation?</Text>
-                        <Text style={styles.modalText}>This will clear all messages.</Text>
-                        <View style={styles.modalButtons}>
-                            <TouchableOpacity
-                                onPress={() => setShowResetModal(false)}
-                                style={styles.cancelButton}
-                            >
-                                <Text style={styles.cancelText}>Cancel</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={confirmReset}
-                                style={styles.confirmButton}
-                            >
-                                <Text style={styles.confirmText}>Yes, Reset</Text>
-                            </TouchableOpacity>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={{ flex: 1 }}>
+                    {messages.length === 0 ? (
+                        <View style={styles.placeholderContainer}>
+                            <Text style={styles.placeholderText}>🤖 Do you have a poker question?</Text>
                         </View>
+                    ) : (
+                        <FlatList
+                            ref={flatListRef}
+                            data={messages}
+                            renderItem={renderMessage}
+                            keyExtractor={(_, index) => index.toString()}
+                            contentContainerStyle={styles.chatContainer}
+                            onContentSizeChange={scrollToBottom}
+                        />
+                    )}
+
+                    {isTyping && <Text style={styles.typingText}>🧠 PokerPal is typing...</Text>}
+                    {isListening && <Text style={styles.listeningText}>🎙️ Listening...</Text>}
+                    {error && <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>}
+
+                    <View style={styles.inputBar}>
+                        <TouchableOpacity onPress={isListening ? stopListening : startListening}>
+                            <Ionicons
+                                name={isListening ? 'stop-circle' : 'mic'}
+                                size={28}
+                                color={isListening ? '#EF4444' : '#10B981'}
+                            />
+                        </TouchableOpacity>
+
+                        <TextInput
+                            style={styles.input}
+                            value={input}
+                            placeholder="Ask something..."
+                            placeholderTextColor="#aaa"
+                            onChangeText={setInput}
+                        />
+
+                        <TouchableOpacity onPress={sendMessage} style={styles.iconButton}>
+                            <Ionicons name="send" size={24} color="#fff" />
+                        </TouchableOpacity>
                     </View>
+
+                    <TouchableOpacity style={styles.resetButton} onPress={() => setShowResetModal(true)}>
+                        <Text style={styles.resetButtonText}>🔄 Start Over</Text>
+                    </TouchableOpacity>
+
+                    <Modal transparent={true} visible={showResetModal} animationType="fade">
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.modalContainer}>
+                                <Text style={styles.modalTitle}>Reset Conversation?</Text>
+                                <Text style={styles.modalText}>This will clear all messages.</Text>
+                                <View style={styles.modalButtons}>
+                                    <TouchableOpacity
+                                        onPress={() => setShowResetModal(false)}
+                                        style={styles.cancelButton}
+                                    >
+                                        <Text style={styles.cancelText}>Cancel</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={confirmReset} style={styles.confirmButton}>
+                                        <Text style={styles.confirmText}>Yes, Reset</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-            </Modal>
+            </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
+    // your existing styles...
     container: { flex: 1, backgroundColor: '#121212' },
     chatContainer: { padding: 5 },
     message: { padding: 12, borderRadius: 12, marginVertical: 6 },

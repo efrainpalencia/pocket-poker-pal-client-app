@@ -4,12 +4,12 @@ import { ExpoConfig, ConfigContext } from '@expo/config';
 export default ({ config }: ConfigContext): ExpoConfig => ({
     name: 'Pocket Poker Pal',
     slug: 'pocket-poker-pal-client-app',
-    version: '1.0.0',
+    version: '1.0.1',
     orientation: 'portrait',
-    icon: './assets/images/poker-chip.png',
+    icon: './assets/images/icon_logo.png',
     userInterfaceStyle: 'light',
     splash: {
-        image: './assets/images/poker-chip.png',
+        image: './assets/images/icon_logo.png',
         resizeMode: 'contain',
         backgroundColor: '#ffffff',
     },
@@ -22,7 +22,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
     android: {
         package: 'com.efrai.pocketpokerpal',
-        versionCode: 1,
+        versionCode: 2,
     },
     web: {
         favicon: './assets/favicon.png',
